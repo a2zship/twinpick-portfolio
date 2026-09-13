@@ -538,15 +538,28 @@
   (function(){
     var form=document.getElementById('contactForm');
     if(!form) return;
+    var ENDPOINT='https://script.google.com/macros/s/AKfycbzhScxgSPBZl0wND7tYQCxFZV7cc7Hf9mJHAkohEValzKrXKU3ySwh3X5w71oA0isQC5Q/exec';
+    var btn=form.querySelector('button[type="submit"]');
+    function done(){
+      form.innerHTML='<div class="text-center py-8">'+
+        '<div class="mx-auto mb-4 grid h-14 w-14 place-items-center rounded-full bg-emerald-500/15 text-emerald-400 ring-1 ring-emerald-500/30"><svg viewBox="0 0 24 24" class="ico"><path d="M20 6 9 17l-5-5"/></svg></div>'+
+        '<div class="font-bold text-slate-100 text-lg">Đã gửi, cảm ơn anh/chị!</div>'+
+        '<div class="text-sm text-slate-400 mt-1.5">Tôi sẽ liên hệ lại sớm nhất qua số điện thoại anh/chị vừa để lại.</div></div>';
+    }
     form.addEventListener('submit',function(e){
       e.preventDefault();
       var name=document.getElementById('f-name').value.trim();
       var comp=document.getElementById('f-company').value.trim();
       var phone=document.getElementById('f-phone').value.trim();
       var topic=document.getElementById('f-topic').value;
-      var subject='[Liên hệ Portfolio] '+topic+' - '+name;
-      var body='Họ tên: '+name+'\nDoanh nghiệp: '+(comp||'(không có)')+'\nSố điện thoại: '+phone+'\nLĩnh vực quan tâm: '+topic+'\n\nNội dung: ';
-      window.location.href='mailto:quangtuyenhd1@gmail.com?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+      if(btn){btn.disabled=true;btn.textContent='Đang gửi…';}
+      var data=new URLSearchParams({name:name,company:comp,phone:phone,topic:topic});
+      fetch(ENDPOINT,{method:'POST',mode:'no-cors',body:data}).then(done).catch(function(){
+        var subject='[Lien he Portfolio] '+topic+' - '+name;
+        var body='Ho ten: '+name+'\nDoanh nghiep: '+(comp||'(khong co)')+'\nSo dien thoai: '+phone+'\nLinh vuc: '+topic;
+        window.location.href='mailto:quangtuyenhd1@gmail.com?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+        done();
+      });
     });
   })();
 
